@@ -46,7 +46,9 @@ $ file /bin/bash
 |`$ rm -f <dest>/<file>`|删除指定文件|
 |`$ rm -rf <dest>`|清空文件夹|
 |`$ pwd`|显示当前的工作目录|
-**使用时替换`<source>`，`<file>`，`<dest>`**
+|`$ find <dest> -name "<string>"`|按文件名查找文件|
+
+**使用时替换`<source>`，`<file>`，`<dest>`,<string>**
 
 ## 3 常用操作
 ### 3.1 修改全局/用户环境变量
