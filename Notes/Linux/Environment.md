@@ -50,3 +50,19 @@ $ ls -li
 - 移除某个包：`conda remove [-n <environment name>] <packages>`
 
 **使用时替换`<environment name>`，`<packages>`**
+
+## Tensorflow
+### 输出调试信息
+屏蔽Tensorflow输出的调试和警告信息
+```
+import os
+import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+```
+在tensorflow0.12以上版本中有效，其中：
+```
+0 = all messages are logged (default behavior)
+1 = INFO messages are not printed
+2 = INFO and WARNING messages are not printed
+3 = INFO, WARNING, and ERROR messages are not printed
+```
