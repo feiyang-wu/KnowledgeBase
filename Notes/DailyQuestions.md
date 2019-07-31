@@ -57,3 +57,5 @@ yocto|y|10^-24
 [markdown基本语法](https://www.jianshu.com/p/191d1e21f7ed)
 ## Visual Studio 2017 找不到源文件stdio.h解决方法
 原来的项目所采用windows SDK 已经发生了变化。因此解决的办法是：项目->属性->配置属性->常规->windows SDK版本。将其换成你现在的版本即可解决问题。
+## MobaXTerm自动断开连接解决方法
+勾选Settings->Configuration->SSH->SSH keepalive，就可以让SSH连接不会一段时间后自动断开。
