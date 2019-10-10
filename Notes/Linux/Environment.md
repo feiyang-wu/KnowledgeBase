@@ -44,6 +44,7 @@ $ ls -li
 - 创建环境：`conda create -n <environment name> <packages>`
 - 激活环境：`conda activate <environment name>`
 - 注销环境：`conda deactivate`
+- 移除环境：`conda remove -n <environment name> --all`
 ### 包管理
 - 查看所有包：`conda list`
 - 安装新的包：`conda install [-n <environment name>] <packages>`
