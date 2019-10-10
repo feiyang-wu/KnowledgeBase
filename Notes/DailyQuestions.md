@@ -49,6 +49,18 @@ atto|a|10^-18
 zepto|z|10^-21
 yocto|y|10^-24
 
+## set associative
+- fully associative
+
+have only one set: any block want to save in cache, will kill a random cache line in cache and input itself in.
+- direct-mapped cache
+
+one block per set, so it have n set, and the block will be stored into the spesific cache line with the index
+
+- n-way set associative
+
+cache divide into x set, each set have n cache lines, the block address get it's set index by mod, and get it's way index by LRU.
+
 # 软件使用问题
 ## Git和Github
 [简单使用Git和Github来管理自己的代码和读书笔记](https://my.oschina.net/bxxfighting/blog/378196)

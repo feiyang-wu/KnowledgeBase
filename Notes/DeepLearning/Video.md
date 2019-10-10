@@ -1,24 +1,29 @@
 # Video
-## CNN + LSTM 解决视频分析相关问题
-### Long-term Recurrent Convolutional Networks for Visual Recognition and Description
-#### 作者
-Jeff Donahue, Lisa Anne Hendricks, Sergio Guadarrama, Marcus Rohrbach, Subhashini Venugopalan, Kate Saenko, Trevor Darrell
-
-#### 组织
-UT Austin, UMass Lowell, UC Berkeley
-
-#### 核心算法
-Long-term Recurrent Convolutional Network (LRCN) model
-
-#### 任务
-1. 动作识别：连续输入，固定输出
-2. 图像描述：固定输入，连续输出
-3. 视频描述：连续输入，连续输出
-
-
-A 3D-CNN and LSTM Based Multi-Task Learning Architecture for Action Recognition|XI OUYANG, SHUANGJIE XU, CHAOYUN ZHANG, PAN ZHOU, YANG YANG, GUANGHUI LIU, XUELONG LI|Huazhong University of Science and Technology, The University of Edinburgh, University of Electronic Science and Technology of China, Northwestern Polytechnical University|
-Video-Based Emotion Recognition using CNN-RNN and C3D Hybrid Networks|Yin Fan, Xiangju Lu, Dian Li, Yuanliu Liu|爱奇艺|
-
-<!-- Beyond Frame-level CNN: Saliency-aware 3D CNN with LSTM for Video Action Recognition|Xuanhan Wang, Lianli Gao, Jingkuan Song, Member, IEEE, and Hengtao Shen, Senior Member, IEEE| -->
-
-## H.264/H.265 视频压制核心算法
+## 视频压制与解压
+### 关键词
+缩写|全名|中文释义
+-|-|-
+ITU|International Telecommunications Union|国际电信联盟
+VECG|Video Coding Experts Group|视频编码专家组
+ISO|International Standards Organization|国际标准化组织
+MPEG|Motion Picture Experts Group|运动图像专家组
+### 数据压缩分类
+- 无损压缩
+    - 压缩前解压缩后图像完全一致X=X'
+    - 压缩比低(2:1~3:1)
+    - 例如：Winzip，JPEG-LS
+- 有损压缩
+    - 压缩前解压缩后图像不一致X≠X'
+    - 压缩比高(10:1~20:1)
+    - 例如：MPEG-2，H.264/AVC，AVS
+### 编解码器
+- 编码器（Encoder）：压缩信号的设备或程序
+- 解码器（Decoder）：解压缩信号的设备或程序
+- 编解码器(Codec)：编解码器对
+### 编解码流程
+-> 预测 -> 变换 -> 量化 -> 熵编码 -> 信道传输 -> 熵解码 -> 反量化 -> 反变换 -> 预测 ->
+- 预测：去除空间冗余和时间冗余，如帧内预测，帧间预测
+- 变换：去除空间冗余，如DCT，小波变换
+- 量化：去除视觉冗余，通过降低图像质量提高压缩比
+- 熵编码：去除编码冗余，如变长编码，算术编码
+### 
