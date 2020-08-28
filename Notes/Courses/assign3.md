@@ -101,3 +101,31 @@ mongotest  0.000GB
 <div align="center">
   <img src="mongodb_db_delete.png">
 </div>
+
+### 集合
+1. 创建集合使用`db.createCollection()`方法
+```
+> db.createCollection("testcol")
+{ "ok" : 1 }
+```
+
+2. 查看当前数据库所有集合集合使用`> show collections`
+```
+> show collections
+mongotest
+testcol
+```
+
+3. 删除集合使用`db.<COL_NAME>.drop()`方法，例如：
+```
+MongoDB Enterprise > db.mongotest.drop()
+true
+```
+
+测试过程如下图所示：
+
+<div align="center">
+  <img src="mongodb_col.png">
+</div>
+
+### 
