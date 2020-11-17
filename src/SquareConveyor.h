@@ -17,7 +17,7 @@ public:
 	void load_from_sbu_to_weight_buf(const Instruction& inst);
 	void store_from_out_buf_to_sbu(const Instruction& inst);
 
-	bool check_LDSBSC(const Instruction& inst);
+	bool check_load_from_sbu(const Instruction& inst);
 
 	vector<SliceBuffer>& sbp;
 

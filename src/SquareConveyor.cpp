@@ -9,7 +9,7 @@ void SquareConveyor::load_from_sbu_to_in_buf(const Instruction& inst)
 	int dstAddr = inst.dst_addr;
 	for (int i = 0; i < size_square; i++)
 	{
-		in_buf.data[(sqc_bank_num + i) % inst.square_size][dstAddr] = sbp[inst.sbu_idx].data[sbu_bank_num][srcAddr];
+		in_buf.data[(sqc_bank_num) % inst.square_size][dstAddr] = sbp[inst.sbu_idx].data[sbu_bank_num][srcAddr];
 		sqc_bank_num++;
 		sbu_bank_num++;
 		if (sqc_bank_num >= inst.square_size)
@@ -34,7 +34,7 @@ void SquareConveyor::load_from_sbu_to_weight_buf(const Instruction& inst)
 	int dstAddr = inst.dst_addr;
 	for (int i = 0; i < inst.ldst_data_size; i++)
 	{
-		weight_buf.data[(sqc_bank_num + i) % WeightBufferBankNum][dstAddr] = sbp[inst.sbu_idx].data[sbu_bank_num][srcAddr];
+		weight_buf.data[(sqc_bank_num) % WeightBufferBankNum][dstAddr] = sbp[inst.sbu_idx].data[sbu_bank_num][srcAddr];
 		sqc_bank_num++;
 		sbu_bank_num++;
 		if (sqc_bank_num >= WeightBufferBankNum)
@@ -59,7 +59,7 @@ void SquareConveyor::store_from_out_buf_to_sbu(const Instruction& inst)
 	int dstAddr = inst.dst_addr;
 	for (int i = 0; i < size_square; i++)
 	{
-		sbp[inst.sbu_idx].data[sbu_bank_num][dstAddr] = out_buf.data[(sqc_bank_num + i) % inst.square_size][srcAddr];
+		sbp[inst.sbu_idx].data[sbu_bank_num][dstAddr] = out_buf.data[(sqc_bank_num) % inst.square_size][srcAddr];
 		sqc_bank_num++;
 		sbu_bank_num++;
 		if (sqc_bank_num >= inst.square_size)
@@ -73,9 +73,10 @@ void SquareConveyor::store_from_out_buf_to_sbu(const Instruction& inst)
 			dstAddr++;
 		}
 	}
+	sbp[inst.sbu_idx].write_ptr = dstAddr+1;
 }
 
-bool SquareConveyor::check_LDSBSC(const Instruction & inst)
+bool SquareConveyor::check_load_from_sbu(const Instruction & inst)
 {
 	int readEnd = inst.src_addr + inst.square_size * inst.square_size / SliceBufferBankNum;
 	if (readEnd <= sbp[inst.sbu_idx].write_ptr)

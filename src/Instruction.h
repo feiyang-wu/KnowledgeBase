@@ -13,6 +13,8 @@ public:
 		height_img(0),
 		width_size(0),
 		height_size(0),
+		start_x(0),
+		start_y(0),
 		bank_num(0),
 		square_size(0),
 		src_reg_a_shiftable(false),

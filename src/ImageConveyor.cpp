@@ -20,7 +20,7 @@ void ImageConveyor::load_from_dram_to_sbu()
 		}
 
 	}
-	sbp[exec_inst.sbu_idx].write_ptr = dstAddr;
+	sbp[exec_inst.sbu_idx].write_ptr = dstAddr+1;
 }
 
 void ImageConveyor::store_from_sbu_to_dram()
@@ -45,8 +45,26 @@ void ImageConveyor::store_from_sbu_to_dram()
 	}
 }
 
+bool ImageConveyor::check_load_from_sbu(const Instruction & inst)
+{
+	int readEnd = inst.src_addr + inst.square_size * inst.square_size / SliceBufferBankNum;
+	if (readEnd <= sbp[inst.sbu_idx].write_ptr)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void ImageConveyor::cycle()
 {
+	cout << "Image Conveyor:" << endl;
+	cout << "Decode Inst.: " << decode_inst.print_type() << endl;
+	cout << "Issue Inst.: " << issue_inst.print_type() << endl;
+	cout << "Execute Inst.: " << exec_inst.print_type() << endl;
+
 	// 4. Exectuion Stage
 	if (executionCountdown == 0)
 	{
@@ -76,8 +94,26 @@ void ImageConveyor::cycle()
 	{
 		if ((issue_inst.inst_type != InstructionType::NONE) && (exec_inst.inst_type == InstructionType::NONE))
 		{
-			exec_inst = issue_inst;
-			issueCountdown = ImageConveyorIssueDelay;
+			switch (issue_inst.inst_type)
+			{
+			case InstructionType::LDDRSB:
+				exec_inst = issue_inst;
+				executionCountdown = issue_inst.exec_time;
+				issue_inst.inst_type = InstructionType::NONE;
+				issueCountdown = ImageConveyorIssueDelay;
+				break;
+			case InstructionType::STSBDR:
+				if (check_load_from_sbu(issue_inst))
+				{
+					exec_inst = issue_inst;
+					issue_inst.inst_type = InstructionType::NONE;
+					issueCountdown = ImageConveyorIssueDelay;
+				}
+				break;
+			default:
+				break;
+			}
+			
 		}
 	}
 	else
@@ -91,6 +127,7 @@ void ImageConveyor::cycle()
 		if ((decode_inst.inst_type != InstructionType::NONE) && (issue_inst.inst_type == InstructionType::NONE))
 		{
 			issue_inst = decode_inst;
+			decode_inst.inst_type = InstructionType::NONE;
 			decodeCountdown = ImageConveyorDecodeDelay;
 		}
 	}
@@ -102,7 +139,7 @@ void ImageConveyor::cycle()
 	// 1. Fetch Stage
 	if (fetchCountdown == 0)
 	{
-		if (decode_inst.inst_type == InstructionType::NONE)
+		if ((decode_inst.inst_type == InstructionType::NONE) && (!inst_buf.empty()))
 		{
 			decode_inst = inst_buf.front();
 			inst_buf.pop();

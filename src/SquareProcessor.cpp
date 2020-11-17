@@ -2,6 +2,12 @@
 
 void SquareProcessor::cycle()
 {
+	cout << "Square Processor #0:" << endl;
+	cout << "Decode Inst.: " << decode_inst.print_type() <<endl;
+	cout << "Issue Inst.: " << issue_inst.print_type() << endl;
+	cout << "Square Conveyor Inst.: " << exec_inst[0].print_type() << endl;
+	cout << "PE Array Inst.: " << exec_inst[1].print_type() << endl;
+	cout << "RF Array Inst.: " << exec_inst[2].print_type() << endl;
 	// 4. Exectuion Stage
 
 	/********************************
@@ -25,15 +31,7 @@ void SquareProcessor::cycle()
 				}
 				break;
 			case InstructionType::STSCSB:
-				sqc.store_from_out_buf_to_sbu();
-				if (exec_inst[0].dst_addr == 0)
-				{
-					out_buf_full_bit[0] = true;
-				}
-				else
-				{
-					out_buf_full_bit[1] = true;
-				}
+				sqc.store_from_out_buf_to_sbu(exec_inst[0]);
 				break;
 			default:
 				break;
@@ -82,14 +80,23 @@ void SquareProcessor::cycle()
 			switch (exec_inst[2].inst_type)
 			{
 			case InstructionType::LDSCRF:
-				load_from_sqc_to_rfa();
+				load_from_sqc_to_rfa(exec_inst[2]);
 				if (exec_inst[2].dst_reg_x_shiftable)
 					rfa_reg_full_bit[exec_inst[2].dst_reg_x] = true;
 				else
 					pea_reg_full_bit[exec_inst[2].dst_reg_x] = true;
 				break;
 			case InstructionType::STRFSC:
-				store_from_rfa_to_sqc();
+				store_from_rfa_to_sqc(exec_inst[2]);
+				if (exec_inst[2].dst_addr == 0)
+				{
+					out_buf_full_bit[0] = true;
+				}
+				else
+				{
+					out_buf_full_bit[1] = true;
+				}
+				break;
 				break;
 			case InstructionType::SHIFT:
 				rfa_shift();
@@ -105,7 +112,7 @@ void SquareProcessor::cycle()
 		executionCountdown[2]--;
 	}
 
-	// 3. Issue Stage
+	// 3. Issue Stage [TODO] Check out this part
 	if (issueCountdown == 0)
 	{
 		bool issueSuccess = false;
@@ -117,7 +124,15 @@ void SquareProcessor::cycle()
 		* Square Conveyor Issue Part
 		********************************/
 		case InstructionType::LDSBSC:
-			if (sqc.check_LDSBSC(issue_inst))
+			if (sqc.check_load_from_sbu(issue_inst))
+			{
+				exec_inst[0] = issue_inst;
+				issueSuccess = true;
+			}
+			break;
+		case InstructionType::STSCSB:
+
+			if ((exec_inst[0].src_addr == 0 && out_buf_full_bit[0])|| (exec_inst[0].src_addr != 0 && out_buf_full_bit[1]))
 			{
 				exec_inst[0] = issue_inst;
 				issueSuccess = true;
@@ -158,8 +173,10 @@ void SquareProcessor::cycle()
 					issueSuccess = true;
 				}
 			}
-			
+			break;
 		case InstructionType::STRFSC:
+			exec_inst[2] = issue_inst;
+			issueSuccess = true;
 			break;
 		case InstructionType::SHIFT:
 			exec_inst[2] = issue_inst;
@@ -171,6 +188,7 @@ void SquareProcessor::cycle()
 		if (issueSuccess)
 		{
 			issueCountdown = ImageConveyorIssueDelay;
+			issue_inst.inst_type = InstructionType::NONE;
 		}
 	}
 	else
@@ -184,6 +202,7 @@ void SquareProcessor::cycle()
 		if ((decode_inst.inst_type != InstructionType::NONE) && (issue_inst.inst_type == InstructionType::NONE))
 		{
 			issue_inst = decode_inst;
+			decode_inst.inst_type = InstructionType::NONE;
 			decodeCountdown = ImageConveyorDecodeDelay;
 		}
 	}
@@ -195,7 +214,7 @@ void SquareProcessor::cycle()
 	// 1. Fetch Stage
 	if (fetchCountdown == 0)
 	{
-		if (decode_inst.inst_type == InstructionType::NONE)
+		if ((decode_inst.inst_type == InstructionType::NONE) && (!inst_buf.empty()))
 		{
 			decode_inst = inst_buf.front();
 			inst_buf.pop();
@@ -271,8 +290,9 @@ void SquareProcessor::store_from_rfa_to_sqc(const Instruction& inst)
 		{
 			for (int j = 0; j < inst.square_size; j++)
 			{
-				sqc.out_buf.data[j][dstAddr] = rf_array[i][j].reg[inst.src_reg_a];
+				sqc.out_buf.data[j][dstAddr] = static_cast<singleByte>(rf_array[i][j].reg[inst.src_reg_a]);
 			}
+			dstAddr++;
 		}
 	}
 	else
@@ -281,8 +301,9 @@ void SquareProcessor::store_from_rfa_to_sqc(const Instruction& inst)
 		{
 			for (int j = 0; j < inst.square_size; j++)
 			{
-				sqc.out_buf.data[j][dstAddr] = pe_array[i][j].reg[inst.src_reg_a];
+				sqc.out_buf.data[j][dstAddr] = static_cast<singleByte>(pe_array[i][j].reg[inst.src_reg_a]);
 			}
+			dstAddr++;
 		}
 	}
 }

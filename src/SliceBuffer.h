@@ -6,6 +6,7 @@ public:
 	SliceBuffer(int Idx) :
 		bank_num(SliceBufferBankNum),
 		bank_size(SliceBufferBankSize),
+		data(SliceBufferBankNum, vector<singleByte>(SliceBufferBankSize, 0)),
 		idx(Idx), 
 		write_ptr(-1),
 		varID(0),

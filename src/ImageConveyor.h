@@ -12,6 +12,7 @@ public:
 
 	void load_from_dram_to_sbu();
 	void store_from_sbu_to_dram();
+	bool check_load_from_sbu(const Instruction& inst);
 
 	void cycle();
 

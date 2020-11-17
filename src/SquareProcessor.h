@@ -29,7 +29,17 @@ public:
 
 class SquareProcessor {
 public:
-	SquareProcessor(SquareConveyor& squareConveyor, int Idx) :sqc(squareConveyor),idx(Idx)
+	SquareProcessor(SquareConveyor& squareConveyor, int Idx) :
+		sqc(squareConveyor),idx(Idx),exec_inst(3, Instruction()),
+		in_buf_full_bit(2, false),
+		out_buf_full_bit(2, false),
+		weight_buf_full_bit(2, false),
+		pea_reg_full_bit(RegSizePerPE, false),
+		rfa_reg_full_bit(RegSizePerRF, false),
+		fetchCountdown(0),
+		decodeCountdown(0),
+		issueCountdown(0),
+		executionCountdown(3, 0)
 	{
 		for (int i = 0; i < PESizePerSTP; i++)
 		{

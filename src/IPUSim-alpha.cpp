@@ -92,7 +92,99 @@ int main()
 	}*/
 	
 	DRAM dram;
+	for (int i = 0; i < 400; i++)
+	{
+		dram.data[i] = 159;
+	}
+	vector<singleByte> weight = { 2,4,5,4,2,4,9,12,9,4,5,12,15,12,5,4,9,12,9,4,2,4,5,4,2 };
+	for (int i = 0; i < 25; i++)
+	{
+		dram.data[400+i] = weight[i];
+	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			cout << static_cast<int>(dram.data[20*i+j])<< " " ;
+		}
+		cout << endl;
+	}
+
 	ImageProcessingUnit ipu(dram);
+	Instruction inst;
+	inst.inst_type = InstructionType::LDDRSB;
+	inst.height_size = 20;
+	inst.width_size = 20;
+	inst.height_img = 20;
+	inst.width_img = 20;
+	inst.sbu_idx = 0;
+	inst.exec_time = 50;
+	ipu.imc.inst_buf.push(inst);
+
+	// Instruction inst;
+	inst = Instruction();
+	inst.inst_type = InstructionType::LDSBSC;
+	inst.square_size = 20;
+	inst.sbu_idx = 0;
+	inst.exec_time = 50;
+	ipu.sqp_list[0].inst_buf.push(inst);
+
+	// Instruction inst;
+	inst = Instruction();
+	inst.inst_type = InstructionType::LDSCRF;
+	inst.dst_reg_x_shiftable = true;
+	inst.square_size = 20;
+	inst.sbu_idx = 0;
+	inst.exec_time = 20;
+	ipu.sqp_list[0].inst_buf.push(inst);
+
+	// Instruction inst;
+	inst = Instruction();
+	inst.inst_type = InstructionType::STRFSC;
+	inst.src_reg_a_shiftable = true;
+	inst.square_size = 16;
+	inst.exec_time = 16;
+	ipu.sqp_list[0].inst_buf.push(inst);
+	
+	// Instruction inst;
+	inst = Instruction();
+	inst.inst_type = InstructionType::STSCSB;
+	inst.dst_reg_x_shiftable = true;
+	inst.square_size = 16;
+	inst.sbu_idx = 2;
+	inst.exec_time = 50;
+	ipu.sqp_list[0].inst_buf.push(inst);
+
+	// Instruction inst;
+	inst = Instruction();
+	inst.inst_type = InstructionType::STSBDR;
+	inst.height_size = 16;
+	inst.width_size = 16;
+	inst.height_img = 16;
+	inst.width_img = 16;
+	inst.dst_addr = 425;
+	inst.square_size = 16;
+	inst.sbu_idx = 2;
+	inst.exec_time = 50;
+	ipu.imc.inst_buf.push(inst);
+
+	for (int i = 0; i < 150; i++)
+	{
+		cout << "Cycle #" << i << ": " << endl;
+		ipu.cycle();
+		cout << endl;
+	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		for (int j = 0; j < 16; j++)
+		{
+			cout << static_cast<int>(dram.data[425 + 16 * i + j]) << " ";
+		}
+		cout << endl;
+	}
+
     std::cout << "Hello IPUSim!\n";
 }
 
