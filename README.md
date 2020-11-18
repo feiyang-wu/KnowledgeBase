@@ -1,4 +1,4 @@
-# IPU-Sim# IPU详细设计
+# IPU-Sim
 ## HDR+算法设计
 HDR+算法的核心部分（不包括用于控制镜头采集图像的前处理操作和用于输出实际展示效果的后处理操作）我们认为由4层高斯金字塔下的光流法对齐，快速傅里叶变换(FFT)，时域合成，空域去噪，快速傅里叶逆变换(IFFT)构成。
 
@@ -45,7 +45,7 @@ Kernel之间的数据依赖可以用有向无环图来表示：
 ~~以前认为的一种可行的Kernel映射到STP上的方案如下图所示，主要问题在于SHG并不能完成升降采样的相应工作而且会导致多余的存储情况。~~
 ![](img/kernel_arrangement_old.png)
 
-## IPU结构设计
+## IPU架构设计
 IPU总体结构如下图所示，Line Buffer Pool(LBP)是数据的中转站，Stencil Processor(STP)是实际的运算单元，两者之间通过NoC连接起来，在简单实现中也可以通过crossbar方式连接。
 ![](./img/framework.png)
 数据从DRAM中读取到LBP 0后，不同的核函数(Kernel)会依次分布到STP1-8上进行运算，运算的输入数据由生产者-消费者模型确定，运算的输出数据存放在LBP1-8中，并由算法流程的最后一个Kernel负责将数据输出。我们认为Line Buffer Pool需要承担GPU中显存的任务，所以DRAM与Line Buffer Pool以及卷积算子所需的存放在DRAM中的权重数据的搬移是由CPU指令负责(即启Kernel时传入)。
@@ -84,3 +84,30 @@ IPU总体结构如下图所示，Line Buffer Pool(LBP)是数据的中转站，St
   - 接受shift操作指令并实际控制2D RF进行shift操作
 - LD/ST Unit
   - 每个PE都有的load store单元，用于接受load store指令
+
+## IPU-Sim实现逻辑
+IPU-Sim主要分为n个模块：IPU内部存储和LPDDR的传输通道和DMA控制中心Image Conveyor（IMC），用于缓存运算流程的中间结果的存储单元Slice Buffer（SLB），用于处理向量运算的Square Processor(SQP)和上述两者之间传输数据的桥梁Square Conveyor(SQC)。
+### 与Google PVC的功能设计对照
+Google PVC Name|Ours|Differences
+-|-|-
+Macro I/O Unit|Image Conveyor|
+Line Buffer Pool|Slice Buffer|
+Sheet Generator|Square Conveyor|
+Stencil Processor|Square Processor|
+
+### 类的设计
+- class ImageConveyor
+  - 信息存储：LPDDR基地址，SLB基地址表
+  - 数据存储：无
+  - 功能：LPDDR与SLB之间的LD/ST
+  - 执行指令：LPDDR与SLB之间的LD/ST
+  - 指令buffer：有
+- class SliceBuffer
+  - 信息存储：LPDDR基地址，SLB基地址表
+  - 数据存储：一维数据存储，图像/权重数据
+  - 功能：存储运算流程中间结果
+  - 执行指令：无
+  - 指令buffer：有
+
+## 项目进度
+- [ ] 指令集设计
