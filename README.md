@@ -103,11 +103,22 @@ Stencil Processor|Square Processor|
   - 执行指令：LPDDR与SLB之间的LD/ST
   - 指令buffer：有
 - class SliceBuffer
-  - 信息存储：LPDDR基地址，SLB基地址表
-  - 数据存储：一维数据存储，图像/权重数据
+  - 信息存储：SLB索引
+  - 数据存储：一维数据存储，用于存储图像/权重数据
   - 功能：存储运算流程中间结果
   - 执行指令：无
+  - 指令buffer：无
+- class SquareConveyor
+  - 信息存储：SLB基地址表，SQC索引
+  - 数据存储：二维数据存储In/Out/Weight Buffer，用于切片后的存储图像/权重数据
+  - 功能：负责`SLB<--->SQC<--->SQP.RF`之间的LD/ST
+  - 执行指令：SLB与SQC之间的LD/ST，SQC与SQP之间的LD/ST
+  - 指令buffer：无
+- class SquareProcessor
+  - 信息存储：SLB基地址表，SQC索引
+  - 数据存储：二维数据存储In/Out/Weight Buffer，用于切片后的存储图像/权重数据
+  - 功能：ALU，RF指令
+  - 执行指令：SLB与SQC之间的LD/ST，SQC与SQP之间的LD/ST
   - 指令buffer：有
-
 ## 项目进度
 - [ ] 指令集设计
