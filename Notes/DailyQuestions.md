@@ -63,7 +63,13 @@ cache divide into x set, each set have n cache lines, the block address get it's
 
 # 软件使用问题
 ## Git和Github
+### Git和Github使用方法
 [简单使用Git和Github来管理自己的代码和读书笔记](https://my.oschina.net/bxxfighting/blog/378196)
+### Github图片裂开问题
+挂了VPN的情况下好像是不会出现这个问题的，体感是被墙了，但是百度后说应该是DNS解析错了的问题，可以通过如下方法修改hosts来解决。
+1. 在查询IP的网站如[IPAddress](https://www.ipaddress.com/)上查询`raw.githubusercontent.com`的IP地址
+1. 修改`C:\Windows\System32\drivers\etc`中的`hosts`文件
+1. 添加条目`<IP Address>    raw.githubusercontent.com  # GitHub raw & image`
 
 ## Markdown语法
 [markdown基本语法](https://www.jianshu.com/p/191d1e21f7ed)
