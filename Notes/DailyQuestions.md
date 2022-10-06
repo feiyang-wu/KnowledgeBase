@@ -77,3 +77,5 @@ cache divide into x set, each set have n cache lines, the block address get it's
 原来的项目所采用windows SDK 已经发生了变化。因此解决的办法是：项目->属性->配置属性->常规->windows SDK版本。将其换成你现在的版本即可解决问题。
 ## MobaXTerm自动断开连接解决方法
 勾选Settings->Configuration->SSH->SSH keepalive，就可以让SSH连接不会一段时间后自动断开。
+## VNC Viewer Keep Alive
+点右上角VNC设置->Options->Experts->IdleTimeout设置为0
